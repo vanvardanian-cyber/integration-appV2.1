@@ -20,7 +20,7 @@ export const handlers = {
   POST: () => Response.json({ message: "Auth is disabled in preview mode." }, { status: 503 }),
 };
 
-export async function signIn() {
+export async function signIn(..._args: unknown[]) {
   redirect("/home");
 }
 
