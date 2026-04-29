@@ -12,6 +12,11 @@ type PreviewAuthHandlerArg = {
   auth: PreviewSession;
 } & Record<string, unknown>;
 
+type AuthFn = {
+  (): Promise<PreviewSession | null>;
+  <T>(handler: (req: PreviewAuthHandlerArg) => T): (req: unknown) => T;
+};
+
 const previewSession: PreviewSession = {
   user: {
     id: "preview-user",
@@ -32,9 +37,7 @@ export async function signOut(options?: { redirectTo?: string }) {
   redirect(options?.redirectTo ?? "/");
 }
 
-export function auth(): Promise<PreviewSession | null>;
-export function auth<T>(handler: (req: PreviewAuthHandlerArg) => T): (req: unknown) => T;
-export function auth(arg?: unknown) {
+export const auth: AuthFn = ((arg?: unknown) => {
   if (typeof arg === "function") {
     return (req: unknown) =>
       arg({
@@ -48,4 +51,4 @@ export function auth(arg?: unknown) {
   }
 
   return Promise.resolve(previewSession);
-}
+}) as AuthFn;
